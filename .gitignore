@@ -1,0 +1,1 @@
+node_modules/echo .envecho *.dbecho *.sqliteecho __pycache__/echo .venv/echo dist/echo build/echo coverage/
