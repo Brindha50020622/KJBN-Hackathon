@@ -54,9 +54,9 @@ class ImportBatch(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     filename: Mapped[str] = mapped_column(String(255))
     uploaded_at: Mapped[datetime] = mapped_column(
-    DateTime(timezone=True),
-    server_default=func.now(),
-)
+        DateTime(timezone=True),
+        server_default=func.now(),
+    )
     file_hash: Mapped[str] = mapped_column(String(64), unique=True)
     rows_total: Mapped[int] = mapped_column(default=0)
     rows_accepted: Mapped[int] = mapped_column(default=0)
@@ -65,7 +65,7 @@ class ImportBatch(Base):
 
 
 class ImportRowError(Base):
-    """One rejected row (or a header error with row_number 0). Source of the error report CSV."""
+    """One rejected row (or a header error with row_number 1). Source of the error report CSV."""
 
     __tablename__ = "import_errors"
 
