@@ -62,7 +62,7 @@ def upload_batch(
     filename = (file.filename or "upload.csv")[:255]
     batch, should_process = register_upload(filename, raw)
     if not should_process:
-        log.warning("duplicate file upload", extra={"batch_id": batch.id, "file_name": filename})
+        log.warning("duplicate file upload", extra={"batch_id": batch.id, "upload_name": filename})
         raise DuplicateFileError(
             "This file was already uploaded",
             details={"batch_id": batch.id, "status": batch.status},
@@ -73,7 +73,7 @@ def upload_batch(
         "upload accepted",
         extra={
             "batch_id": batch.id,
-            "file_name": filename,
+            "upload_name": filename,
             "bytes": len(raw),
         },
     )
