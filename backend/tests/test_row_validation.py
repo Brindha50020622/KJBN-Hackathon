@@ -95,3 +95,27 @@ def test_sold_at_one_second_in_the_future_is_rejected():
 
 def test_sold_at_exactly_now_is_accepted():
     assert "sold_at" not in error_columns(sold_at="2026-10-18 17:30:00")
+
+
+def test_text_longer_than_column_size_is_rejected():
+    assert "product_name" in error_columns(product_name="x" * 201)
+    assert "product_name" not in error_columns(product_name="x" * 200)
+
+
+@pytest.mark.parametrize("qty,ok", [("100000", True), ("-100000", True), ("100001", False)])
+def test_quantity_upper_boundary(qty, ok):
+    cols = error_columns(quantity=qty, discount="0.00", original_transaction_id="T-0")
+    assert ("quantity" not in cols) is ok
+
+
+@pytest.mark.parametrize("price,ok", [("10000000.00", True), ("10000000.01", False)])
+def test_unit_price_upper_boundary(price, ok):
+    assert ("unit_price" not in error_columns(unit_price=price, discount="0.00")) is ok
+
+
+def test_nul_character_is_rejected():
+    assert "sku" in error_columns(sku="A\x00B")
+
+
+def test_year_one_date_is_rejected_without_crashing():
+    assert "sold_at" in error_columns(sold_at="0001-01-01 00:00:00")
