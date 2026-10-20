@@ -15,6 +15,9 @@ REQUIRED_COLUMNS = [
     "original_transaction_id",
 ]
 PAYMENT_MODES = {"CASH", "UPI", "CARD"}
+MAX_LENGTHS = {"transaction_id": 50, "sku": 50, "product_name": 200}
+MAX_QUANTITY = 100_000
+MAX_AMOUNT_PAISE = 1_000_000_000  # 10,000,000.00
 
 IST = timezone(timedelta(hours=5, minutes=30))
 _INT = re.compile(r"^-?[0-9]+$")
@@ -60,8 +63,11 @@ def parse_sold_at(text: str) -> datetime:
     text = text.strip()
     if not _DATETIME.match(text):
         raise ValueError("must be YYYY-MM-DD HH:MM:SS")
-    local = datetime.strptime(text, "%Y-%m-%d %H:%M:%S").replace(tzinfo=IST)
-    return local.astimezone(UTC)
+    try:
+        local = datetime.strptime(text, "%Y-%m-%d %H:%M:%S").replace(tzinfo=IST)
+        return local.astimezone(UTC)
+    except OverflowError as exc:
+        raise ValueError("date is out of range") from exc
 
 
 def line_total_paise(quantity: int, unit_price_paise: int, discount_paise: int) -> int:
@@ -78,10 +84,14 @@ def validate_row(row: dict[str, str], store_codes: set[str], now: datetime) -> l
 
     def money(column: str) -> int | None:
         try:
-            return parse_money_to_paise(row.get(column, ""))
+            value = parse_money_to_paise(row.get(column, ""))
         except ValueError as exc:
             fail(column, str(exc))
             return None
+        if value > MAX_AMOUNT_PAISE:
+            fail(column, "is too large")
+            return None
+        return value
 
     def text(column: str) -> str:
         return row.get(column, "").strip()
@@ -100,13 +110,23 @@ def validate_row(row: dict[str, str], store_codes: set[str], now: datetime) -> l
     if not text("product_name"):
         fail("product_name", "is required")
 
+    for column, value in row.items():
+        if "\x00" in value:
+            fail(column, "contains an invalid character")
+    for column, limit in MAX_LENGTHS.items():
+        if len(text(column)) > limit:
+            fail(column, f"is longer than {limit} characters")
+
     quantity = None
-    if not _INT.match(text("quantity")):
+    raw_quantity = text("quantity")
+    if not _INT.match(raw_quantity):
         fail("quantity", "must be a whole number")
-    elif int(text("quantity")) == 0:
+    elif len(raw_quantity) > 9 or abs(int(raw_quantity)) > MAX_QUANTITY:
+        fail("quantity", "is too large")
+    elif int(raw_quantity) == 0:
         fail("quantity", "must not be zero")
     else:
-        quantity = int(text("quantity"))
+        quantity = int(raw_quantity)
 
     unit_price = money("unit_price")
     discount = money("discount")
