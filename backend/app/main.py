@@ -6,11 +6,12 @@ from uuid import uuid4
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 from sqlalchemy import text
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.api import router
+from app.api_reports import router as reports_router
 from app.config import settings
 from app.db import SessionLocal
 from app.errors import AppError, error_body
@@ -32,9 +33,7 @@ app = FastAPI(title="Sales Import & Dashboard API", version="1.0.0", lifespan=li
 
 def _error_response(request: Request, status: int, code: str, message: str, details=None):
     request_id = getattr(request.state, "request_id", "-")
-    return JSONResponse(
-        content=error_body(code, message, request_id, details), status_code=status
-    )
+    return JSONResponse(content=error_body(code, message, request_id, details), status_code=status)
 
 
 @app.exception_handler(AppError)
@@ -94,6 +93,7 @@ app.add_middleware(
 )
 
 app.include_router(router)
+app.include_router(reports_router)
 
 
 @app.get("/health", tags=["health"])
@@ -105,3 +105,8 @@ def health():
         log.exception("health check failed")
         return JSONResponse({"status": "unavailable"}, status_code=503)
     return {"status": "ok"}
+
+
+@app.get("/", include_in_schema=False)
+def root():
+    return RedirectResponse("/docs")
