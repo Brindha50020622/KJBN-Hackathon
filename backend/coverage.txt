@@ -1,0 +1,46 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.7, pytest-8.3.5, pluggy-1.5.0
+rootdir: C:\Users\sarat\Downloads\kjbn-assignment\backend
+configfile: pyproject.toml
+testpaths: tests
+plugins: anyio-4.12.1, langsmith-0.3.18, asyncio-0.26.0, cov-7.1.0, socket-0.7.0, syrupy-4.9.1
+asyncio: mode=Mode.STRICT, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collected 173 items
+
+tests\test_api_batches.py .........................                      [ 14%]
+tests\test_api_reports.py .............................                  [ 31%]
+tests\test_bootstrap.py ..                                               [ 32%]
+tests\test_config.py ..                                                  [ 33%]
+tests\test_dashboard_helpers.py .............                            [ 41%]
+tests\test_failed_import.py .                                            [ 41%]
+tests\test_importer.py ..........................                        [ 56%]
+tests\test_money_and_header.py ................................          [ 75%]
+tests\test_returns.py .........                                          [ 80%]
+tests\test_row_validation.py ..................................          [100%]
+
+=============================== tests coverage ================================
+_______________ coverage: platform win32, python 3.12.7-final-0 _______________
+
+Name                   Stmts   Miss  Cover   Missing
+----------------------------------------------------
+app\__init__.py            0      0   100%
+app\api.py                56      0   100%
+app\api_reports.py        24      0   100%
+app\bootstrap.py          31      7    77%   17, 33-37, 41
+app\clock.py              15      2    87%   18, 22
+app\config.py             20      0   100%
+app\dashboard.py          31      0   100%
+app\db.py                  7      0   100%
+app\errors.py             24      0   100%
+app\importer.py          127      2    98%   88, 164
+app\logging_setup.py      23      0   100%
+app\main.py               70      9    87%   27-28, 56-58, 104-106, 112
+app\models.py             56      0   100%
+app\repository.py        104      0   100%
+app\rules.py             119      2    98%   109, 111
+app\schemas.py            80      0   100%
+app\seed.py               13      2    85%   29-30
+app\service.py            74      7    91%   132-142
+----------------------------------------------------
+TOTAL                    874     31    96%
+============================ 173 passed in 35.53s =============================
