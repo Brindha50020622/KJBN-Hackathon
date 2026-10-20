@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: sales-api
+    runtime: docker
+    plan: free
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: CORS_ORIGINS
+        sync: false
+      - key: APP_ENV
+        value: production
+      - key: LOG_LEVEL
+        value: INFO
+      - key: ENABLE_TEST_CLOCK
+        value: "true"
+      - key: SEED_HISTORY
+        value: "true"
