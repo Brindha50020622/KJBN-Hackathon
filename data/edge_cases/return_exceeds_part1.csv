@@ -1,0 +1,6 @@
+transaction_id,store_code,sold_at,sku,product_name,quantity,unit_price,discount,payment_mode,original_transaction_id
+RE-001,ST02,2026-10-10 10:00:00,SKU-201,Toor Dal 1kg,3,165.00,0.00,UPI,
+RE-002,ST03,2026-10-01 17:38:10,SKU-201,Toor Dal 1kg,1,165.00,0.00,CASH,
+RE-003,ST06,2026-10-09 14:42:50,SKU-205,Besan 1kg,6,92.00,0.00,UPI,
+RE-004,ST01,2026-10-04 19:53:05,SKU-605,Tomato Ketchup 1kg,6,125.00,0.00,CASH,
+RE-005,ST03,2026-10-14 17:06:51,SKU-111,Moong Dal 1kg,2,145.00,11.60,CASH,

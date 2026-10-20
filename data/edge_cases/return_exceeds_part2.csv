@@ -1,0 +1,6 @@
+transaction_id,store_code,sold_at,sku,product_name,quantity,unit_price,discount,payment_mode,original_transaction_id
+RE2-001,ST02,2026-10-11 10:00:00,SKU-201,Toor Dal 1kg,-2,165.00,0.00,UPI,RE-001
+RE2-002,ST02,2026-10-12 10:00:00,SKU-201,Toor Dal 1kg,-2,165.00,0.00,UPI,RE-001
+RE2-003,ST06,2026-10-13 21:04:22,SKU-115,Brown Rice 1kg,6,95.00,0.00,UPI,
+RE2-004,ST01,2026-10-08 21:15:31,SKU-113,Urad Dal 1kg,6,138.00,0.00,CASH,
+RE2-005,ST01,2026-10-04 10:05:22,SKU-605,Tomato Ketchup 1kg,6,125.00,0.00,UPI,

@@ -1,0 +1,11 @@
+transaction_id,store_code,sold_at,sku,product_name,quantity,unit_price,discount,payment_mode,original_transaction_id
+Z-001,ST02,2026-10-06 11:45:58,SKU-606,Instant Noodles  pack of 12,4,180.00,57.60,UPI,
+Z-002,ST02,2026-10-12 13:30:52,SKU-601,Parle-G Biscuits 800g,4,100.00,0.00,UPI,
+Z-003,ST02,2026-10-15 20:37:22,SKU-116,Wheat Flour 1kg,3,54.00,0.00,UPI,
+Z-004,ST06,2026-10-03 08:16:35,SKU-518,Tata Tea Gold 500g,0,245.00,0.00,CASH,
+Z-005,ST01,2026-10-02 13:05:49,SKU-426,Olive Oil 500ml,3,425.00,0.00,UPI,
+Z-006,ST02,2026-10-15 18:54:53,SKU-422,Sunflower Oil 1L,2,152.50,0.00,CARD,
+Z-007,ST03,2026-10-07 13:40:18,SKU-114,Basmati Rice 5kg,1,540.00,0.00,UPI,
+Z-008,ST06,2026-10-03 11:03:21,SKU-519,Filter Coffee 200g,0,165.00,0.00,CASH,
+Z-009,ST01,2026-10-13 18:19:57,SKU-603,Potato Chips 150g,4,40.00,0.00,CARD,
+Z-010,ST03,2026-10-15 17:00:23,SKU-115,Brown Rice 1kg,4,95.00,15.20,UPI,

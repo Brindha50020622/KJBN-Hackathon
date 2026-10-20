@@ -1,0 +1,11 @@
+transaction_id,store_code,sold_at,sku,product_name,quantity,discount,payment_mode,original_transaction_id
+BH-001,ST06,2026-10-04 09:46:29,SKU-602,Marie Biscuits 500g,3,0.00,CASH,
+BH-002,ST06,2026-10-09 13:37:51,SKU-206,Ragi Flour 1kg,1,0.00,UPI,
+BH-003,ST05,2026-10-03 14:25:06,SKU-206,Ragi Flour 1kg,1,0.72,CASH,
+BH-004,ST01,2026-10-12 19:51:28,SKU-424,Mustard Oil 1L,3,0.00,CARD,
+BH-005,ST03,2026-10-06 11:46:48,SKU-108,Iodized Salt 1kg,3,0.00,CARD,
+BH-006,ST04,2026-10-14 16:56:14,SKU-110,Rava 1kg,2,0.00,CARD,
+BH-007,ST03,2026-10-08 11:17:10,SKU-426,Olive Oil 500ml,6,0.00,UPI,
+BH-008,ST03,2026-10-15 09:32:10,SKU-606,Instant Noodles  pack of 12,3,16.20,CASH,
+BH-009,ST06,2026-10-17 16:23:12,SKU-425,Coconut Oil 500ml,2,0.00,CASH,
+BH-010,ST03,2026-10-14 11:31:50,SKU-518,Tata Tea Gold 500g,5,0.00,CASH,

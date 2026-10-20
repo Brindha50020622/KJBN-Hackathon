@@ -1,0 +1,7 @@
+transaction_id,store_code,sold_at,sku,product_name,quantity,unit_price,discount,payment_mode,original_transaction_id
+RBO-001,ST01,2026-10-11 10:00:00,SKU-114,Basmati Rice 5kg,-1,540.00,0.00,UPI,RBO-003
+RBO-002,ST01,2026-10-10 10:00:00,SKU-114,Basmati Rice 5kg,2,540.00,0.00,CARD,
+RBO-003,ST01,2026-10-10 11:00:00,SKU-114,Basmati Rice 5kg,3,540.00,0.00,UPI,
+RBO-004,ST03,2026-10-12 13:39:48,SKU-109,Poha 1kg,4,68.00,8.16,UPI,
+RBO-005,ST04,2026-10-12 20:05:37,SKU-202,Masoor Dal 1kg,1,112.00,8.96,UPI,
+RBO-006,ST02,2026-10-14 21:13:51,SKU-116,Wheat Flour 1kg,6,54.00,0.00,CASH,
