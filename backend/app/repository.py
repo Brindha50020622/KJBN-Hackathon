@@ -1,9 +1,23 @@
 from collections.abc import Iterator, Sequence
+from datetime import date, datetime
 
-from sqlalchemy import func, insert, select, text, update
+from sqlalchemy import (
+    Date,
+    and_,
+    case,
+    cast,
+    func,
+    insert,
+    literal_column,
+    or_,
+    select,
+    text,
+    update,
+)
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.orm import Session
 
+from app.dashboard import StoreTotals
 from app.importer import NewTransaction
 from app.models import ImportBatch, ImportRowError, Product, ProductAlias, Store, Transaction
 from app.rules import TxnInfo
@@ -156,3 +170,129 @@ def list_errors(session: Session, batch_id: int) -> list[tuple[int, str, str]]:
         .order_by(ImportRowError.row_number, ImportRowError.id)
     ).all()
     return [(r[0], r[1], r[2]) for r in rows]
+
+
+def _range_conditions(start: datetime | None, end: datetime | None) -> list:
+    conditions = []
+    if start is not None:
+        conditions.append(Transaction.sold_at >= start)
+    if end is not None:
+        conditions.append(Transaction.sold_at < end)
+    return conditions
+
+
+def _like_pattern(value: str) -> str:
+    escaped = value.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+    return f"%{escaped}%"
+
+
+def search_transactions(
+    session: Session,
+    *,
+    store: str | None,
+    start: datetime | None,
+    end: datetime | None,
+    sku: str | None,
+    returns_only: bool,
+    q: str | None,
+    limit: int,
+    offset: int,
+) -> tuple[list[tuple[Transaction, str]], int]:
+    conditions = _range_conditions(start, end)
+    if store:
+        conditions.append(Store.code == store)
+    if sku:
+        conditions.append(Transaction.sku == sku)
+    if returns_only:
+        conditions.append(Transaction.is_return.is_(True))
+    if q:
+        pattern = _like_pattern(q)
+        conditions.append(
+            or_(
+                Transaction.transaction_id.ilike(pattern, escape="\\"),
+                Transaction.product_name.ilike(pattern, escape="\\"),
+            )
+        )
+    total = session.scalar(
+        select(func.count())
+        .select_from(Transaction)
+        .join(Store, Store.id == Transaction.store_id)
+        .where(*conditions)
+    )
+    rows = session.execute(
+        select(Transaction, Store.code)
+        .join(Store, Store.id == Transaction.store_id)
+        .where(*conditions)
+        .order_by(Transaction.sold_at.desc(), Transaction.id.desc())
+        .limit(limit)
+        .offset(offset)
+    ).all()
+    return [(r[0], r[1]) for r in rows], total or 0
+
+
+_IST_DAY = cast(func.timezone(literal_column("'Asia/Kolkata'"), Transaction.sold_at), Date)
+
+
+def revenue_by_day(
+    session: Session, start: datetime | None, end: datetime | None
+) -> list[tuple[date, int]]:
+    rows = session.execute(
+        select(_IST_DAY, func.sum(Transaction.line_total_paise))
+        .where(*_range_conditions(start, end))
+        .group_by(_IST_DAY)
+        .order_by(_IST_DAY)
+    ).all()
+    return [(r[0], int(r[1])) for r in rows]
+
+
+def store_totals(
+    session: Session, start: datetime | None, end: datetime | None
+) -> list[StoreTotals]:
+    """One row per store, including stores with no sales in the range."""
+    sold = func.coalesce(
+        func.sum(case((Transaction.quantity > 0, Transaction.quantity), else_=0)),
+        0,
+    )
+    returned = func.coalesce(
+        func.sum(case((Transaction.quantity < 0, -Transaction.quantity), else_=0)), 0
+    )
+    revenue = func.coalesce(func.sum(Transaction.line_total_paise), 0)
+    join_on = and_(Transaction.store_id == Store.id, *_range_conditions(start, end))
+    rows = session.execute(
+        select(Store.code, Store.name, revenue, func.count(Transaction.id), sold, returned)
+        .select_from(Store)
+        .outerjoin(Transaction, join_on)
+        .group_by(Store.id)
+        .order_by(Store.code)
+    ).all()
+    return [StoreTotals(r[0], r[1], int(r[2]), int(r[3]), int(r[4]), int(r[5])) for r in rows]
+
+
+def top_products(
+    session: Session, start: datetime | None, end: datetime | None, limit: int = 10
+) -> list[tuple[str, str, int, int]]:
+    net_quantity = func.sum(Transaction.quantity)
+    rows = session.execute(
+        select(Transaction.sku, Product.name, net_quantity, func.sum(Transaction.line_total_paise))
+        .join(Product, Product.sku == Transaction.sku)
+        .where(*_range_conditions(start, end))
+        .group_by(Transaction.sku, Product.name)
+        .order_by(net_quantity.desc(), Transaction.sku)
+        .limit(limit)
+    ).all()
+    return [(r[0], r[1], int(r[2]), int(r[3])) for r in rows]
+
+
+def payment_totals(
+    session: Session, start: datetime | None, end: datetime | None
+) -> dict[str, tuple[int, int]]:
+    rows = session.execute(
+        select(
+            Transaction.payment_mode,
+            func.sum(Transaction.line_total_paise),
+            func.count(Transaction.id),
+        )
+        .where(*_range_conditions(start, end))
+        .group_by(Transaction.payment_mode)
+    ).all()
+    return {r[0]: (int(r[1]), int(r[2])) for r in rows}
